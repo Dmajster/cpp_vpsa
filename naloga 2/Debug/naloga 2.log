@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\projects\cpp_vpsa\vendors\pthreads\include\pthread.h(320,17): error C2011: 'timespec': 'struct' type redefinition
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\time.h(39): message : see declaration of 'timespec'
