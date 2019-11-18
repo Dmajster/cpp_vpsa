@@ -1,8 +1,1 @@
-﻿  main.cpp
-C:\projects\cpp_vpsa\naloga 1\main.cpp(22,44): warning C4244: 'initializing': conversion from 'const float' to 'size_t', possible loss of data
-C:\projects\cpp_vpsa\naloga 1\main.cpp(66,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 18 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  naloga 1.vcxproj -> C:\projects\cpp_vpsa\x64\Release\naloga 1.exe
+﻿  naloga 1.vcxproj -> C:\Users\domen\repositories\cpp_vpsa\x64\Release\naloga 1.exe

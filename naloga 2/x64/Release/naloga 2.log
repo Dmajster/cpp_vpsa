@@ -1,9 +1,1 @@
-﻿  main.cpp
-C:\projects\cpp_vpsa\naloga 2\main.cpp(81,34): warning C4267: 'argument': conversion from 'size_t' to 'const int', possible loss of data
-C:\projects\cpp_vpsa\naloga 2\main.cpp(111,27): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Generating code
-  3 of 249 functions ( 1.2%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  naloga 2.vcxproj -> C:\projects\cpp_vpsa\x64\Release\naloga 2.exe
+﻿  naloga 2.vcxproj -> C:\Users\domen\repositories\cpp_vpsa\x64\Release\naloga 2.exe
