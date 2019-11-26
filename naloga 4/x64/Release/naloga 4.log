@@ -1,0 +1,4 @@
+﻿  main.cpp
+C:\Users\domen\repositories\cpp_vpsa\naloga 4\main.cpp(79,24): error C3035:  OpenMP 'ordered' directive must bind directly to a 'for' or 'parallel for' directive with the 'ordered' clause
+C:\Users\domen\repositories\cpp_vpsa\naloga 4\main.cpp(99,24): error C3035:  OpenMP 'ordered' directive must bind directly to a 'for' or 'parallel for' directive with the 'ordered' clause
+C:\Users\domen\repositories\cpp_vpsa\naloga 4\main.cpp(119,24): error C3035:  OpenMP 'ordered' directive must bind directly to a 'for' or 'parallel for' directive with the 'ordered' clause
