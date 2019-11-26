@@ -7,9 +7,9 @@
 #include <iomanip>
 #include <iostream>
 
-constexpr auto n = 100000;
+constexpr auto n = 1000000;
 constexpr auto bucket_size = 10000;
-constexpr auto repeat_count = 10;
+constexpr auto repeat_count = 1;
 
 struct thread_data_static
 {

@@ -9,7 +9,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 1", "naloga 1\naloga
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 3", "naloga 3\naloga 3.vcxproj", "{9189B27F-E8B1-432E-87FB-CC4FC3B72FE0}"
 EndProject
+<<<<<<< HEAD
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 4", "naloga 4\naloga 4.vcxproj", "{BFAAFE13-35ED-4794-AF69-9C9CA10A03CD}"
+=======
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 4", "naloga 4\naloga 4.vcxproj", "{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}"
+>>>>>>> 9a4176608a09bf5434906e0d29f3196a36e36d0a
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,7 @@ Global
 		{9189B27F-E8B1-432E-87FB-CC4FC3B72FE0}.Release|x64.Build.0 = Release|x64
 		{9189B27F-E8B1-432E-87FB-CC4FC3B72FE0}.Release|x86.ActiveCfg = Release|Win32
 		{9189B27F-E8B1-432E-87FB-CC4FC3B72FE0}.Release|x86.Build.0 = Release|Win32
+<<<<<<< HEAD
 		{BFAAFE13-35ED-4794-AF69-9C9CA10A03CD}.Debug|x64.ActiveCfg = Debug|x64
 		{BFAAFE13-35ED-4794-AF69-9C9CA10A03CD}.Debug|x64.Build.0 = Debug|x64
 		{BFAAFE13-35ED-4794-AF69-9C9CA10A03CD}.Debug|x86.ActiveCfg = Debug|Win32
@@ -49,6 +54,16 @@ Global
 		{BFAAFE13-35ED-4794-AF69-9C9CA10A03CD}.Release|x64.Build.0 = Release|x64
 		{BFAAFE13-35ED-4794-AF69-9C9CA10A03CD}.Release|x86.ActiveCfg = Release|Win32
 		{BFAAFE13-35ED-4794-AF69-9C9CA10A03CD}.Release|x86.Build.0 = Release|Win32
+=======
+		{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}.Debug|x64.ActiveCfg = Debug|x64
+		{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}.Debug|x64.Build.0 = Debug|x64
+		{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}.Debug|x86.ActiveCfg = Debug|Win32
+		{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}.Debug|x86.Build.0 = Debug|Win32
+		{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}.Release|x64.ActiveCfg = Release|x64
+		{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}.Release|x64.Build.0 = Release|x64
+		{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}.Release|x86.ActiveCfg = Release|Win32
+		{5D6B73C9-7F01-4A1A-B11B-EBA8E207686E}.Release|x86.Build.0 = Release|Win32
+>>>>>>> 9a4176608a09bf5434906e0d29f3196a36e36d0a
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
