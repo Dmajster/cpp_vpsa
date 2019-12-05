@@ -1,11 +1,8 @@
-﻿  main.cpp
-C:\Users\domen\repositories\cpp_vpsa\naloga 5\main.cpp(125,9): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\Users\domen\repositories\cpp_vpsa\naloga 5\main.cpp(125,9): message : consider using '%zd' in the format string
-C:\Users\domen\repositories\cpp_vpsa\naloga 5\main.cpp(51,11): warning C4101: 'buf_len': unreferenced local variable
-C:\Users\domen\repositories\cpp_vpsa\naloga 5\main.cpp(50,10): warning C4101: 'buf': unreferenced local variable
+﻿  mandelbrot.cpp
+C:\projects\cpp_vpsa\naloga 5\mandelbrot.cpp(30,14): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   Generating code
-  1 of 8 functions (12.5%) were compiled, the rest were copied from previous compilation.
+  0 of 8 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  Naloga 5.vcxproj -> C:\Users\domen\repositories\cpp_vpsa\x64\Release\naloga 5.exe
+  Naloga 5.vcxproj -> C:\projects\cpp_vpsa\x64\Release\naloga 5.exe

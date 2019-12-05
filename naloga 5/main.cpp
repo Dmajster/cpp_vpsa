@@ -3,154 +3,116 @@
 #include <cstdio>
 #include <cstdlib>
 #include <CL/cl.h>
+#include <memory>
 
 #define SIZE			(1024)
-#define WORKGROUP_SIZE	(512)
+#define WORKGROUP_SIZE	(128)
 #define MAX_SOURCE_SIZE	16384
 
 int main()
 {
 	char ch;
 	int i;
-	cl_int ret;
 
-	int vectorSize = SIZE;
+	auto vector_size = SIZE;
 
-	// Branje datoteke
-	FILE *fp;
-	char *source_str;
-	size_t source_size;
+	char* source_str;
 
-	fp = fopen("kernel.cl", "r");
+	const auto fp = fopen("kernel.cl", "r");
 	if (!fp)
 	{
 		fprintf(stderr, ":-(#\n");
 		exit(1);
 	}
-	source_str = (char*)malloc(MAX_SOURCE_SIZE);
-	source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
+	source_str = new char[MAX_SOURCE_SIZE];
+	const auto source_size = fread(source_str, 1, MAX_SOURCE_SIZE, fp);
 	source_str[source_size] = '\0';
 	fclose(fp);
 
-	// Rezervacija pomnilnika
-	int *A = (int*)malloc(vectorSize*sizeof(int));
-	int *B = (int*)malloc(vectorSize*sizeof(int));
-	int *C = (int*)malloc(vectorSize*sizeof(int));
+	const auto a = new int[vector_size];
+	const auto b = new int[vector_size];
+	const auto c = new int[vector_size];
 
-	// Inicializacija vektorjev
-	for (i = 0; i < vectorSize; i++)
+	for (i = 0; i < vector_size; i++)
 	{
-		A[i] = i;
-		B[i] = vectorSize - i;
+		a[i] = i;
+		b[i] = vector_size - i;
 	}
 
-	// Podatki o platformi
 	cl_platform_id	platform_id[10];
 	cl_uint			ret_num_platforms;
-	char			*buf;
+	char* buf;
 	size_t			buf_len;
-	ret = clGetPlatformIDs(10, platform_id, &ret_num_platforms);
-	// max. "stevilo platform, kazalec na platforme, dejansko "stevilo platform
+	auto ret = clGetPlatformIDs(10, platform_id, &ret_num_platforms);
 
-	char* profile = NULL;
-	size_t size;
-	clGetPlatformInfo(platform_id[0], CL_PLATFORM_PROFILE, NULL, profile, &size); // get size of profile char array
-	profile = (char*)malloc(size);
-	clGetPlatformInfo(platform_id[0], CL_PLATFORM_PROFILE, size, profile, NULL); // get profile char array
-	printf("%s", profile);
+	printf("platform id: %d\n", ret);
 	
-	// Podatki o napravi
+	char* profile = nullptr;
+	size_t size;
+	clGetPlatformInfo(platform_id[0], CL_PLATFORM_PROFILE, NULL, profile, &size);
+	profile = static_cast<char*>(malloc(size));
+	clGetPlatformInfo(platform_id[0], CL_PLATFORM_PROFILE, size, profile, nullptr);
+	printf("%s\n", profile);
+	
 	cl_device_id	device_id[10];
 	cl_uint			ret_num_devices;
-	// Delali bomo s platform_id[0] na GPU
-	ret = clGetDeviceIDs(platform_id[0], CL_DEVICE_TYPE_GPU, 10,
-		device_id, &ret_num_devices);
-	// izbrana platforma, tip naprave, koliko naprav nas zanima
-	// kazalec na naprave, dejansko "stevilo naprav
+	ret = clGetDeviceIDs(platform_id[0], CL_DEVICE_TYPE_GPU, 10, device_id, &ret_num_devices);
+	printf("get 0 device id: %d\n", ret);
 
-	// Kontekst
-	cl_context context = clCreateContext(NULL, 1, &device_id[0], NULL, NULL, &ret);
-	// kontekst: vklju"cene platforme - NULL je privzeta, "stevilo naprav, 
-	// kazalci na naprave, kazalec na call-back funkcijo v primeru napake
-	// dodatni parametri funkcije, "stevilka napake
+	
+	const auto context = clCreateContext(nullptr, 1, &device_id[0], nullptr, nullptr, &ret);
+	const auto command_queue = clCreateCommandQueueWithProperties(context, device_id[0], nullptr, &ret);
 
-	// Ukazna vrsta
-	cl_command_queue command_queue = clCreateCommandQueue(context, device_id[0], 0, &ret);
-	// kontekst, naprava, INORDER/OUTOFORDER, napake
-
-	// Delitev dela
 	size_t local_item_size = WORKGROUP_SIZE;
-	size_t num_groups = ((vectorSize - 1) / local_item_size + 1);
-	size_t global_item_size = num_groups*local_item_size;
+	const auto num_groups = (vector_size - 1) / local_item_size + 1;
+	auto global_item_size = num_groups * local_item_size;
 
-	// Alokacija pomnilnika na napravi
-	cl_mem a_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-		vectorSize*sizeof(int), A, &ret);
-	// kontekst, na"cin, koliko, lokacija na hostu, napaka	
-	cl_mem b_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-		vectorSize*sizeof(int), B, &ret);
-	cl_mem c_mem_obj = clCreateBuffer(context, CL_MEM_WRITE_ONLY,
-		vectorSize*sizeof(int), NULL, &ret);
+	auto a_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, vector_size * sizeof(int), a, &ret);
+	auto b_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, vector_size * sizeof(int), b, &ret);
+	auto c_mem_obj = clCreateBuffer(context, CL_MEM_WRITE_ONLY, vector_size * sizeof(int), nullptr, &ret);
 
-	// Priprava programa
-	cl_program program = clCreateProgramWithSource(context, 1, (const char **)&source_str,
-		NULL, &ret);
-	// kontekst, "stevilo kazalcev na kodo, kazalci na kodo,		
-	// stringi so NULL terminated, napaka													
+	const auto program = clCreateProgramWithSource(context, 1, const_cast<const char**>(&source_str), nullptr, &ret);
 
-	// Prevajanje
-	ret = clBuildProgram(program, 1, &device_id[0], NULL, NULL, NULL);
-	// program, "stevilo naprav, lista naprav, opcije pri prevajanju,
-	// kazalec na funkcijo, uporabni"ski argumenti
-
-	// Log
+	ret = clBuildProgram(program, 1, &device_id[0], nullptr, nullptr, nullptr);
+	printf("get build info: %d\n", ret);
+	
 	size_t build_log_len;
-	char *build_log;
-	ret = clGetProgramBuildInfo(program, device_id[0], CL_PROGRAM_BUILD_LOG,
-		0, NULL, &build_log_len);
-	// program, "naprava, tip izpisa, 
-	// maksimalna dol"zina niza, kazalec na niz, dejanska dol"zina niza
-	build_log = (char *)malloc(sizeof(char)*(build_log_len + 1));
-	ret = clGetProgramBuildInfo(program, device_id[0], CL_PROGRAM_BUILD_LOG,
-		build_log_len, build_log, NULL);
+	ret = clGetProgramBuildInfo(program, device_id[0], CL_PROGRAM_BUILD_LOG, 0, nullptr, &build_log_len);
+	printf("get program build info: %d\n", ret);
+	
+	const auto build_log = static_cast<char*>(malloc(sizeof(char) * (build_log_len + 1)));
+	ret = clGetProgramBuildInfo(program, device_id[0], CL_PROGRAM_BUILD_LOG, build_log_len, build_log, nullptr);
+	printf("get program build info 2: %d\n", ret);
 	printf("%s\n", build_log);
 	free(build_log);
 
-	// "s"cepec: priprava objekta
-	cl_kernel kernel = clCreateKernel(program, "vector_add", &ret);
-	// program, ime "s"cepca, napaka
+	const auto kernel = clCreateKernel(program, "vector_add", &ret);
 
 	size_t buf_size_t;
-	clGetKernelWorkGroupInfo(kernel, device_id[0], CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(buf_size_t), &buf_size_t, NULL);
-	printf("veckratnik niti = %d", buf_size_t);
+	clGetKernelWorkGroupInfo(kernel, device_id[0], CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(buf_size_t), &buf_size_t, nullptr);
+	printf("veckratnik niti = %zu", buf_size_t);
 
 	scanf("%c", &ch);
 
-	// "s"cepec: argumenti
-	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&a_mem_obj);
-	ret |= clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&b_mem_obj);
-	ret |= clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&c_mem_obj);
-	ret |= clSetKernelArg(kernel, 3, sizeof(cl_int), (void *)&vectorSize);
-	// "s"cepec, "stevilka argumenta, velikost podatkov, kazalec na podatke
+	ret = clSetKernelArg(kernel, 0, sizeof(cl_mem), static_cast<void*>(&a_mem_obj));
+	printf("set kernel arg 0: %d\n", ret);
+	
+	ret |= clSetKernelArg(kernel, 1, sizeof(cl_mem), static_cast<void*>(&b_mem_obj));
+	printf("set kernel arg 1: %d\n", ret);
+	
+	ret |= clSetKernelArg(kernel, 2, sizeof(cl_mem), static_cast<void*>(&c_mem_obj));
+	printf("set kernel arg 2: %d\n", ret);
+	
+	ret |= clSetKernelArg(kernel, 3, sizeof(cl_int), static_cast<void*>(&vector_size));
+	printf("set kernel arg 3: %d\n", ret);
+	
+	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, nullptr, &global_item_size, &local_item_size, 0, nullptr, nullptr);
+	printf("enqueue nd range kernel %d\n", ret);
+	
+	ret = clEnqueueReadBuffer(command_queue, c_mem_obj, CL_TRUE, 0, vector_size * sizeof(int), c, 0, nullptr, nullptr);
+	printf("enqueue read buffer %d\n", ret);
+	
 
-	// "s"cepec: zagon
-	ret = clEnqueueNDRangeKernel(command_queue, kernel, 1, NULL,
-		&global_item_size, &local_item_size, 0, NULL, NULL);
-	// vrsta, "s"cepec, dimenzionalnost, mora biti NULL, 
-	// kazalec na "stevilo vseh niti, kazalec na lokalno "stevilo niti, 
-	// dogodki, ki se morajo zgoditi pred klicem
-
-	// Kopiranje rezultatov
-	ret = clEnqueueReadBuffer(command_queue, c_mem_obj, CL_TRUE, 0,
-		vectorSize*sizeof(int), C, 0, NULL, NULL);
-	// branje v pomnilnik iz naparave, 0 = offset
-	// zadnji trije - dogodki, ki se morajo zgoditi prej
-
-	// Prikaz rezultatov
-	for (i = 0; i < vectorSize; i++)
-		printf("%d + %d = %d\n", A[i], B[i], C[i]);
-
-	// "ci"s"cenje
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
 	ret = clReleaseKernel(kernel);
@@ -161,12 +123,6 @@ int main()
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
 
-	free(A);
-	free(B);
-	free(C);
-
 	return 0;
 }
-
-// kernel
 

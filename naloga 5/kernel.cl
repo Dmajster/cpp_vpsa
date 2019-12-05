@@ -1,4 +1,5 @@
-__kernel void vector_add(__global const int *A,
+__kernel void vector_add(
+	__global const int *A,
 	__global const int *B,
 	__global int *C,
 	int size)
