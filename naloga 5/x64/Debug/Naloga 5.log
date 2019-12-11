@@ -1,3 +1,0 @@
-﻿  mandelbrot.cpp
-C:\Users\domen\repositories\cpp_vpsa\Naloga 5\mandelbrot.cpp(33,23): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-  Naloga 5.vcxproj -> C:\Users\domen\repositories\cpp_vpsa\x64\Debug\Naloga 5.exe

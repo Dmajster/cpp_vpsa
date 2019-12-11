@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mandelbrot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="kernel.cl" />

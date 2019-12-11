@@ -1,7 +1,5 @@
-﻿  mandelbrot.cpp
-C:\projects\cpp_vpsa\naloga 5\mandelbrot.cpp(30,14): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-  Generating code
-  0 of 8 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+﻿  Generating code
+  0 of 9 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
