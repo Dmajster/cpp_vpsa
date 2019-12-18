@@ -7,8 +7,12 @@ __kernel void vector_add(
 	const int max_iteration = 800;   //max stevilo iteracij
 	const unsigned char max = 255;   //max vrednost barvnega kanala
 
-	int i = get_global_id(0);
-	int j = get_global_id(1);
+	int i = get_global_id(1);
+	int j = get_global_id(0);
+
+	if( i > height || j > width ){
+		return;
+	}
 
 	const float x0 = (float)j / width * (float)3.5 - (float)2.5; //zacetna vrednost
 	const float y0 = (float)i / height * (float)2.0 - (float)1.0;

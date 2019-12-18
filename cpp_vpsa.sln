@@ -11,7 +11,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 3", "naloga 3\naloga
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 4", "naloga 4\naloga 4.vcxproj", "{BFAAFE13-35ED-4794-AF69-9C9CA10A03CD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Naloga 5", "Naloga 5\Naloga 5.vcxproj", "{0542C29B-33BC-405E-809C-C87B0C5D954B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 5", "naloga 5\Naloga 5.vcxproj", "{0542C29B-33BC-405E-809C-C87B0C5D954B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 6", "naloga 6\naloga 6.vcxproj", "{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,16 @@ Global
 		{0542C29B-33BC-405E-809C-C87B0C5D954B}.Release|x64.Build.0 = Release|x64
 		{0542C29B-33BC-405E-809C-C87B0C5D954B}.Release|x86.ActiveCfg = Release|Win32
 		{0542C29B-33BC-405E-809C-C87B0C5D954B}.Release|x86.Build.0 = Release|Win32
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Debug|x64.ActiveCfg = Debug|x64
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Debug|x64.Build.0 = Debug|x64
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Debug|x86.ActiveCfg = Debug|Win32
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Debug|x86.Build.0 = Debug|Win32
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Release|Any CPU.ActiveCfg = Release|Win32
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Release|x64.ActiveCfg = Release|x64
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Release|x64.Build.0 = Release|x64
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Release|x86.ActiveCfg = Release|Win32
+		{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

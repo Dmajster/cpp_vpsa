@@ -6,8 +6,8 @@
 #include <cmath>
 #include <FreeImage.h>
 
-#define IMAGE_WIDTH	(1024)
-#define IMAGE_HEIGHT (1024)
+#define IMAGE_WIDTH	(361)
+#define IMAGE_HEIGHT (532)
 #define WORKGROUP_SIZE	(64)
 #define MAX_SOURCE_SIZE	16384
 
@@ -69,8 +69,12 @@ int main()
 	// kontekst, naprava, INORDER/OUTOFORDER, napake
 
 	// Delitev dela
-	size_t local_item_size[2] = { sqrt(WORKGROUP_SIZE), sqrt(WORKGROUP_SIZE) };
-	size_t global_item_size[2] = { IMAGE_WIDTH, IMAGE_HEIGHT };
+
+	size_t WORKGROUP_SIDE_LENGTH = sqrt(WORKGROUP_SIZE);
+
+	
+	size_t local_item_size[2] = { WORKGROUP_SIDE_LENGTH, WORKGROUP_SIDE_LENGTH };
+	size_t global_item_size[2] = { ceil(IMAGE_WIDTH / (float)local_item_size[0]) * local_item_size[0], ceil(IMAGE_HEIGHT / (float)local_item_size[1]) * local_item_size[1] };
 
 	printf("local size: %zu, %zu\n", local_item_size[0], local_item_size[1]);
 	printf("global size: %zu, %zu\n", global_item_size[0], global_item_size[1]);
@@ -111,7 +115,7 @@ int main()
 	clGetKernelWorkGroupInfo(kernel, device_id[0], CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(buf_size_t), &buf_size_t, NULL);
 	printf("veckratnik niti = %d", buf_size_t);
 
-	scanf("%c", &ch);
+	//scanf("%c", &ch);
 
 	// "s"cepec: argumenti
 	ret |= clSetKernelArg(kernel, 0, sizeof(cl_mem), (void*)&c_mem_obj);
