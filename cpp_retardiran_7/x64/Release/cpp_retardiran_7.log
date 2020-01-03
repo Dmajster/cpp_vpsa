@@ -1,0 +1,17 @@
+﻿  main.cpp
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(84,31): warning C4244: 'initializing': conversion from 'double' to 'size_t', possible loss of data
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(87,79): warning C4838: conversion from 'float' to 'size_t' requires a narrowing conversion
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(87,79): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(87,148): warning C4838: conversion from 'float' to 'size_t' requires a narrowing conversion
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(87,148): warning C4244: 'initializing': conversion from 'float' to 'size_t', possible loss of data
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(115,9): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(115,9): message : consider using '%zd' in the format string
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(73,8): warning C4101: 'buf': unreferenced local variable
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(51,6): warning C4101: 'i': unreferenced local variable
+C:\projects\cpp_vpsa\cpp_retardiran_7\main.cpp(50,7): warning C4101: 'ch': unreferenced local variable
+  Generating code
+  1 of 8 functions (12.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  cpp_retardiran_7.vcxproj -> C:\projects\cpp_vpsa\x64\Release\cpp_retardiran_7.exe
