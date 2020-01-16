@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_retardiran_7", "cpp_ret
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 8", "naloga 8\naloga 8.vcxproj", "{128C4E21-F417-4EC3-B472-BB81D3D18C2C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 9", "naloga 9\naloga 9.vcxproj", "{A3AFFBDD-6544-43FA-9618-80AB81368564}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,16 @@ Global
 		{128C4E21-F417-4EC3-B472-BB81D3D18C2C}.Release|x64.Build.0 = Release|x64
 		{128C4E21-F417-4EC3-B472-BB81D3D18C2C}.Release|x86.ActiveCfg = Release|Win32
 		{128C4E21-F417-4EC3-B472-BB81D3D18C2C}.Release|x86.Build.0 = Release|Win32
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Debug|x64.ActiveCfg = Debug|x64
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Debug|x64.Build.0 = Debug|x64
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Debug|x86.ActiveCfg = Debug|Win32
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Debug|x86.Build.0 = Debug|Win32
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Release|Any CPU.ActiveCfg = Release|Win32
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Release|x64.ActiveCfg = Release|x64
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Release|x64.Build.0 = Release|x64
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Release|x86.ActiveCfg = Release|Win32
+		{A3AFFBDD-6544-43FA-9618-80AB81368564}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
