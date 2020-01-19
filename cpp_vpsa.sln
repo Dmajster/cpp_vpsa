@@ -15,7 +15,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 5", "naloga 5\Naloga
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 6", "naloga 6\naloga 6.vcxproj", "{DB8CDDC9-C66C-42E4-99C8-117DFFBF75F9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 7", "cpp_retardiran_7\cpp_retardiran_7.vcxproj", "{F3E4FDE6-D53C-4483-AFEE-DA5386EBFB46}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 7", "naloga 7\naloga 7.vcxproj", "{F3E4FDE6-D53C-4483-AFEE-DA5386EBFB46}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "naloga 8", "naloga 8\naloga 8.vcxproj", "{128C4E21-F417-4EC3-B472-BB81D3D18C2C}"
 EndProject
