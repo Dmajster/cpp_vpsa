@@ -1,15 +1,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <CL/cl.h>
 #include <cmath>
 #include <FreeImage.h>
 
 #define WORKGROUP_SIZE	(64)
 #define MAX_SOURCE_SIZE	16384
-#define BINS 256
-
-#define GRAYLEVELS 256
 
 struct ImageData
 {
@@ -56,20 +53,15 @@ char* load_kernel_source(const char* file_name)
 	return source_string;
 }
 
-void printHistogram(unsigned int* histogram) {
-	printf("Barva\tPojavitve\n");
-	for (int i = 0; i < BINS; i++) {
-		printf("%d\t%d\n", i, histogram[i]);
-	}
-}
-
 int main()
 {
-	auto image = load_image("slika.png");
+	auto gray_levels = 256;
+	
+	auto image = load_image("image.png");
 	auto kernel_source = load_kernel_source("kernel.cl");
-	auto gray_levels = GRAYLEVELS;
+	
 
-	auto bins = (unsigned int*)calloc(GRAYLEVELS, sizeof(unsigned int));
+	auto bins = (unsigned int*)calloc(gray_levels, sizeof(unsigned int));
 
 	cl_platform_id	platform_id[10];
 	cl_uint			ret_num_platforms;
@@ -89,8 +81,8 @@ int main()
 	size_t global_item_size[2] = { ceil(image->width / static_cast<float>(local_item_size[0]))* local_item_size[0], ceil(image->height / static_cast<float>(local_item_size[1]))* local_item_size[1] };
 
 	auto image_input_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, image->width * image->height * sizeof(unsigned char), image->pixels, &ret);
-	auto histogram_mem_obj = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, BINS * sizeof(unsigned int*), bins, &ret);
-	auto cdf_histogram_mem_obj = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, BINS * sizeof(unsigned int*), bins, &ret);
+	auto histogram_mem_obj = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, gray_levels * sizeof(unsigned int*), bins, &ret);
+	auto cdf_histogram_mem_obj = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, gray_levels * sizeof(unsigned int*), bins, &ret);
 
 	const auto program = clCreateProgramWithSource(context, 1, const_cast<const char**>(&kernel_source), nullptr, &ret);
 
@@ -135,9 +127,9 @@ int main()
 	size_t cdf_global_size = 128;
 	size_t cdf_local_size = 128;
 	ret = clEnqueueNDRangeKernel(command_queue, cdf_kernel, 1, nullptr, &cdf_global_size, &cdf_local_size, 1, &histogram_event, &cdf_event);
-	ret = clEnqueueReadBuffer(command_queue, histogram_mem_obj, CL_TRUE, 0, 256 * sizeof(unsigned int), bins, 0, nullptr, nullptr);
+	ret = clEnqueueReadBuffer(command_queue, histogram_mem_obj, CL_TRUE, 0, gray_levels * sizeof(unsigned int), bins, 0, nullptr, nullptr);
 	ret = clEnqueueNDRangeKernel(command_queue, eq_kernel, 2, nullptr, global_item_size, local_item_size, 1, &cdf_event, nullptr);
-	ret = clEnqueueReadBuffer(command_queue, cdf_histogram_mem_obj, CL_TRUE, 0, 256 * sizeof(unsigned int), bins, 0, nullptr, nullptr);
+	ret = clEnqueueReadBuffer(command_queue, cdf_histogram_mem_obj, CL_TRUE, 0, gray_levels * sizeof(unsigned int), bins, 0, nullptr, nullptr);
 	ret = clEnqueueReadBuffer(command_queue, image_input_mem_obj, CL_TRUE, 0, image->width * image->height * sizeof(char), image->pixels, 0, nullptr, nullptr);
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
