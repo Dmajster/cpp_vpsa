@@ -1,21 +1,21 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
+#include <cstdio>
 #include <cstdlib>
 #include <CL/cl.h>
 #include <cmath>
 #include <FreeImage.h>
 
-#define WORKGROUP_SIZE	(64)
-#define MAX_SOURCE_SIZE	16384
+constexpr auto workgroup_size = (64);
+constexpr auto max_source_size = 16384;
 
-struct ImageData
+struct image_data
 {
 	unsigned int width;
 	unsigned int height;
 	unsigned char* pixels;
 };
 
-ImageData* load_image(const char* file_name)
+image_data* load_image(const char* file_name)
 {
 	const auto image_bitmap = FreeImage_Load(FIF_PNG, file_name, 0);
 	const auto image_bitmap_grey = FreeImage_ConvertToGreyscale(image_bitmap);
@@ -23,17 +23,17 @@ ImageData* load_image(const char* file_name)
 	const auto image_width = FreeImage_GetWidth(image_bitmap_grey);
 	const auto image_height = FreeImage_GetHeight(image_bitmap_grey);
 
-	const auto image_data = new ImageData{
+	const auto image = new image_data{
 		image_width,
 		image_height,
-		new unsigned char[image_width * image_height]
+		new unsigned char[image_height * image_width]
 	};
 
-	FreeImage_ConvertToRawBits(image_data->pixels, image_bitmap_grey, image_data->width, 8, 0xFF, 0xFF, 0xFF, TRUE);
+	FreeImage_ConvertToRawBits(image->pixels, image_bitmap_grey, image->width, 8, 0xFF, 0xFF, 0xFF, TRUE);
 	FreeImage_Unload(image_bitmap_grey);
 	FreeImage_Unload(image_bitmap);
 
-	return image_data;
+	return image;
 }
 
 char* load_kernel_source(const char* file_name)
@@ -45,8 +45,8 @@ char* load_kernel_source(const char* file_name)
 		exit(1);
 	}
 
-	const auto source_string = static_cast<char*>(malloc(MAX_SOURCE_SIZE));
-	const auto source_size = fread(source_string, 1, MAX_SOURCE_SIZE, file);
+	const auto source_string = static_cast<char*>(malloc(max_source_size));
+	const auto source_size = fread(source_string, 1, max_source_size, file);
 	source_string[source_size] = '\0';
 	fclose(file);
 
@@ -75,7 +75,7 @@ int main()
 
 	const auto command_queue = clCreateCommandQueueWithProperties(context, device_id[0], nullptr, &ret);
 
-	const size_t WORKGROUP_SIDE_LENGTH = sqrt(WORKGROUP_SIZE);
+	const size_t WORKGROUP_SIDE_LENGTH = sqrt(workgroup_size);
 
 	size_t local_item_size[2] = { WORKGROUP_SIDE_LENGTH, WORKGROUP_SIDE_LENGTH };
 	size_t global_item_size[2] = { ceil(image->width / static_cast<float>(local_item_size[0]))* local_item_size[0], ceil(image->height / static_cast<float>(local_item_size[1]))* local_item_size[1] };
@@ -127,9 +127,7 @@ int main()
 	size_t cdf_global_size = 128;
 	size_t cdf_local_size = 128;
 	ret = clEnqueueNDRangeKernel(command_queue, cdf_kernel, 1, nullptr, &cdf_global_size, &cdf_local_size, 1, &histogram_event, &cdf_event);
-	ret = clEnqueueReadBuffer(command_queue, histogram_mem_obj, CL_TRUE, 0, gray_levels * sizeof(unsigned int), bins, 0, nullptr, nullptr);
 	ret = clEnqueueNDRangeKernel(command_queue, eq_kernel, 2, nullptr, global_item_size, local_item_size, 1, &cdf_event, nullptr);
-	ret = clEnqueueReadBuffer(command_queue, cdf_histogram_mem_obj, CL_TRUE, 0, gray_levels * sizeof(unsigned int), bins, 0, nullptr, nullptr);
 	ret = clEnqueueReadBuffer(command_queue, image_input_mem_obj, CL_TRUE, 0, image->width * image->height * sizeof(char), image->pixels, 0, nullptr, nullptr);
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
