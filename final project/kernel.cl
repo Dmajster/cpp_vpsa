@@ -1,3 +1,5 @@
+__constant unsigned int gray_levels = 256;
+
 __kernel void histogram(
 	__global unsigned char* input_image,
 	__global unsigned int* output_bins,
@@ -5,7 +7,7 @@ __kernel void histogram(
 	int height
 )
 {
-	__local unsigned int localBuffer[256];
+	__local unsigned int localBuffer[gray_levels];
 
 	int x = get_global_id(0);
 	int y = get_global_id(1);
@@ -14,13 +16,13 @@ __kernel void histogram(
 
 	int workgroup_x = get_local_id(0);
 	int workgroup_y = get_local_id(1);
+	int workgroup_width = get_local_size(0);
+	int workgroup_height = get_local_size(1);
 
-	if( workgroup_x == 0 && workgroup_y == 0)
+
+	for(int i = workgroup_y * workgroup_width + workgroup_x;i < gray_levels;i+= workgroup_width * workgroup_height )
 	{
-		for(int i = 0;i < 256;i++ )
-		{
-			localBuffer[i] = 0;
-		}
+		localBuffer[i] = 0;
 	}
 
 	barrier(CLK_GLOBAL_MEM_FENCE);
@@ -35,30 +37,25 @@ __kernel void histogram(
 
 	barrier(CLK_GLOBAL_MEM_FENCE);
 
-	if( workgroup_x == 0 && workgroup_y == 0)
+	for(int i = workgroup_y * workgroup_width + workgroup_x;i < gray_levels;i+= workgroup_width * workgroup_height )
 	{
-		for(int i = 0;i < 256;i++ )
-		{
-			atomic_add(&output_bins[i], localBuffer[i]);
-		}
+		atomic_add(&output_bins[i], localBuffer[i]);
 	}
 }
 
 __kernel void cdf(
-	__global unsigned int* g_idata,
-	__global unsigned int* g_odata
+	__global unsigned int* histogram,
+	__global unsigned int* distribution
 )
 {
-	int n = 256;
-
-	__local float temp[256];
+	__local float temp[gray_levels];
 
 	int thid = get_local_id(0);
 
 	int offset = 1;
-	temp[2 * thid] = g_idata[2 * thid];     
-	temp[2 * thid + 1] = g_idata[2 * thid + 1];
-	for (int d = n >> 1; d > 0; d >>= 1)
+	temp[2 * thid] = histogram[2 * thid];     
+	temp[2 * thid + 1] = histogram[2 * thid + 1];
+	for (int d = gray_levels >> 1; d > 0; d >>= 1)
 	{
 		barrier(CLK_GLOBAL_MEM_FENCE);
 
@@ -73,10 +70,10 @@ __kernel void cdf(
 	}
 	if (thid == 0)
 	{
-		temp[n - 1] = 0;
+		temp[gray_levels - 1] = 0;
 	}
 
-	for (int d = 1; d < n; d *= 2)    
+	for (int d = 1; d < gray_levels; d *= 2)    
 	{
 		offset >>= 1;
 
@@ -94,8 +91,8 @@ __kernel void cdf(
 
 	barrier(CLK_GLOBAL_MEM_FENCE);
 
-	g_odata[2 * thid] = temp[2 * thid];
-	g_odata[2 * thid + 1] = temp[2 * thid + 1];
+	distribution[2 * thid] = temp[2 * thid];
+	distribution[2 * thid + 1] = temp[2 * thid + 1];
 }
 
 
@@ -104,7 +101,7 @@ unsigned int findMin(__global unsigned int* histogram)
 {
 	unsigned int min = 0;
 
-	for (int i = 0; min == 0 && i < 256; i++)
+	for (int i = 0; min == 0 && i < gray_levels; i++)
 	{
 		min = histogram[i];
 	}
@@ -115,7 +112,7 @@ unsigned int findMin(__global unsigned int* histogram)
 unsigned char scale(unsigned int cdf, unsigned int cdfmin, unsigned int imageSize)
 {
 	float scale = (float)(cdf - cdfmin) / (float)(imageSize - cdfmin);
-	scale = round(scale * (float)(256.0 - 1));
+	scale = round(scale * (float)(gray_levels - 1));
 	return (char)scale;
 }
 

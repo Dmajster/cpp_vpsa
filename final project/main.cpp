@@ -4,8 +4,11 @@
 #include <CL/cl.h>
 #include <cmath>
 #include <FreeImage.h>
+#include <ctime>
+#include <ostream>
+#include <iostream>
 
-constexpr auto workgroup_size = (64);
+constexpr auto workgroup_size = 64;
 constexpr auto max_source_size = 16384;
 
 struct image_data
@@ -55,16 +58,16 @@ char* load_kernel_source(const char* file_name)
 
 int main()
 {
-	auto gray_levels = 256;
+	const auto gray_levels = 256;
 	
-	auto image = load_image("image.png");
+	auto image = load_image("./images/image2.png");
 	auto kernel_source = load_kernel_source("kernel.cl");
 
 	const auto image_in_bitmap = FreeImage_ConvertFromRawBits(image->pixels, image->width, image->height, image->width, 8, 0xFF, 0xFF, 0xFF, TRUE);
-	FreeImage_Save(FIF_PNG, image_in_bitmap, "image_grayscale.png", 0);
+	FreeImage_Save(FIF_PNG, image_in_bitmap, "./images/image_greyscale.png", 0);
 	FreeImage_Unload(image_in_bitmap);
 
-	auto bins = (unsigned int*)calloc(gray_levels, sizeof(unsigned int));
+	const auto bins = static_cast<unsigned int*>(calloc(gray_levels, sizeof(unsigned int)));
 
 	cl_platform_id	platform_id[10];
 	cl_uint			ret_num_platforms;
@@ -75,13 +78,14 @@ int main()
 	ret = clGetDeviceIDs(platform_id[0], CL_DEVICE_TYPE_CPU, 10, device_id, &ret_num_devices);
 
 	const auto context = clCreateContext(nullptr, 1, &device_id[0], nullptr, nullptr, &ret);
-
 	const auto command_queue = clCreateCommandQueueWithProperties(context, device_id[0], nullptr, &ret);
-
-	const size_t WORKGROUP_SIDE_LENGTH = sqrt(workgroup_size);
-
-	size_t local_item_size[2] = { WORKGROUP_SIDE_LENGTH, WORKGROUP_SIDE_LENGTH };
-	size_t global_item_size[2] = { ceil(image->width / static_cast<float>(local_item_size[0]))* local_item_size[0], ceil(image->height / static_cast<float>(local_item_size[1]))* local_item_size[1] };
+	
+	const size_t workgroup_side_length = sqrt(workgroup_size);
+	size_t local_item_size[2] = { workgroup_side_length, workgroup_side_length };
+	size_t global_item_size[2] = {
+		ceil(image->width / static_cast<float>(local_item_size[0])) * local_item_size[0],
+		ceil(image->height / static_cast<float>(local_item_size[1])) * local_item_size[1]
+	};
 
 	auto image_input_mem_obj = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, image->width * image->height * sizeof(unsigned char), image->pixels, &ret);
 	auto histogram_mem_obj = clCreateBuffer(context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, gray_levels * sizeof(unsigned int*), bins, &ret);
@@ -99,9 +103,11 @@ int main()
 	printf("%s\n", build_log);
 	free(build_log);
 
-	const auto histogram_kernel = clCreateKernel(program, "histogram", &ret);
-
 	size_t buf_size_t;
+
+
+	
+	const auto histogram_kernel = clCreateKernel(program, "histogram", &ret);
 	clGetKernelWorkGroupInfo(histogram_kernel, device_id[0], CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(buf_size_t), &buf_size_t, nullptr);
 	ret |= clSetKernelArg(histogram_kernel, 0, sizeof(cl_mem), static_cast<void*>(&image_input_mem_obj));
 	ret |= clSetKernelArg(histogram_kernel, 1, sizeof(cl_mem), static_cast<void*>(&histogram_mem_obj));
@@ -121,16 +127,38 @@ int main()
 	ret |= clSetKernelArg(eq_kernel, 3, sizeof(cl_int), static_cast<void*>(&image->height));
 
 
+
+	//WARMUP
 	ret = clEnqueueWriteBuffer(command_queue, image_input_mem_obj, CL_TRUE, 0, image->width * image->height * sizeof(char), image->pixels, 0, nullptr, nullptr);
 	cl_event histogram_event;
 	ret = clEnqueueNDRangeKernel(command_queue, histogram_kernel, 2, nullptr, global_item_size, local_item_size, 0, nullptr, &histogram_event);
-
-	cl_event cdf_event;
 	size_t cdf_global_size = 128;
 	size_t cdf_local_size = 128;
+	cl_event cdf_event;
 	ret = clEnqueueNDRangeKernel(command_queue, cdf_kernel, 1, nullptr, &cdf_global_size, &cdf_local_size, 1, &histogram_event, &cdf_event);
 	ret = clEnqueueNDRangeKernel(command_queue, eq_kernel, 2, nullptr, global_item_size, local_item_size, 1, &cdf_event, nullptr);
 	ret = clEnqueueReadBuffer(command_queue, image_input_mem_obj, CL_TRUE, 0, image->width * image->height * sizeof(char), image->pixels, 0, nullptr, nullptr);
+
+
+	//const auto start_time = clock();
+	//for(auto i = 0; i < 50; i++ )
+	//{
+	//	ret = clEnqueueWriteBuffer(command_queue, image_input_mem_obj, CL_TRUE, 0, image->width * image->height * sizeof(char), image->pixels, 0, nullptr, nullptr);
+	//	cl_event histogram_event;
+	//	ret = clEnqueueNDRangeKernel(command_queue, histogram_kernel, 2, nullptr, global_item_size, local_item_size, 0, nullptr, &histogram_event);
+	//	size_t cdf_global_size = 128;
+	//	size_t cdf_local_size = 128;
+	//	cl_event cdf_event;
+	//	ret = clEnqueueNDRangeKernel(command_queue, cdf_kernel, 1, nullptr, &cdf_global_size, &cdf_local_size, 1, &histogram_event, &cdf_event);
+	//	ret = clEnqueueNDRangeKernel(command_queue, eq_kernel, 2, nullptr, global_item_size, local_item_size, 1, &cdf_event, nullptr);
+	//	ret = clEnqueueReadBuffer(command_queue, image_input_mem_obj, CL_TRUE, 0, image->width * image->height * sizeof(char), image->pixels, 0, nullptr, nullptr);
+	//}
+	//const auto end_time = clock();
+
+	//const auto execution_time = static_cast<double>(end_time - start_time) / 50 / CLOCKS_PER_SEC;
+	//
+	//std::cout << "Cas racunanja: " << execution_time << "s." << std::endl;
+	
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
 	ret = clReleaseKernel(histogram_kernel);
@@ -143,8 +171,10 @@ int main()
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
 
+
+
 	const auto image_out_bitmap = FreeImage_ConvertFromRawBits(image->pixels, image->width, image->height, image->width, 8, 0xFF, 0xFF, 0xFF, TRUE);
-	FreeImage_Save(FIF_PNG, image_out_bitmap, "image_out.png", 0);
+	FreeImage_Save(FIF_PNG, image_out_bitmap, "./images/image_out.png", 0);
 	FreeImage_Unload(image_out_bitmap);
 
 	free(image->pixels);
