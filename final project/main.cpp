@@ -59,7 +59,10 @@ int main()
 	
 	auto image = load_image("image.png");
 	auto kernel_source = load_kernel_source("kernel.cl");
-	
+
+	const auto image_in_bitmap = FreeImage_ConvertFromRawBits(image->pixels, image->width, image->height, image->width, 8, 0xFF, 0xFF, 0xFF, TRUE);
+	FreeImage_Save(FIF_PNG, image_in_bitmap, "image_grayscale.png", 0);
+	FreeImage_Unload(image_in_bitmap);
 
 	auto bins = (unsigned int*)calloc(gray_levels, sizeof(unsigned int));
 
@@ -109,7 +112,6 @@ int main()
 	clGetKernelWorkGroupInfo(cdf_kernel, device_id[0], CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(buf_size_t), &buf_size_t, nullptr);
 	ret |= clSetKernelArg(cdf_kernel, 0, sizeof(cl_mem), static_cast<void*>(&histogram_mem_obj));
 	ret |= clSetKernelArg(cdf_kernel, 1, sizeof(cl_mem), static_cast<void*>(&cdf_histogram_mem_obj));
-	ret |= clSetKernelArg(cdf_kernel, 2, sizeof(cl_int), static_cast<void*>(&gray_levels));
 
 	const auto eq_kernel = clCreateKernel(program, "equalize", &ret);
 	clGetKernelWorkGroupInfo(eq_kernel, device_id[0], CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(buf_size_t), &buf_size_t, nullptr);
@@ -132,6 +134,8 @@ int main()
 	ret = clFlush(command_queue);
 	ret = clFinish(command_queue);
 	ret = clReleaseKernel(histogram_kernel);
+	ret = clReleaseKernel(cdf_kernel);
+	ret = clReleaseKernel(eq_kernel);
 	ret = clReleaseProgram(program);
 	ret = clReleaseMemObject(image_input_mem_obj);
 	ret = clReleaseMemObject(histogram_mem_obj);
@@ -139,9 +143,9 @@ int main()
 	ret = clReleaseCommandQueue(command_queue);
 	ret = clReleaseContext(context);
 
-	const auto imageOutBitmap = FreeImage_ConvertFromRawBits(image->pixels, image->width, image->height, image->width, 8, 0xFF, 0xFF, 0xFF, TRUE);
-	FreeImage_Save(FIF_PNG, imageOutBitmap, "image_out.png", 0);
-	FreeImage_Unload(imageOutBitmap);
+	const auto image_out_bitmap = FreeImage_ConvertFromRawBits(image->pixels, image->width, image->height, image->width, 8, 0xFF, 0xFF, 0xFF, TRUE);
+	FreeImage_Save(FIF_PNG, image_out_bitmap, "image_out.png", 0);
+	FreeImage_Unload(image_out_bitmap);
 
 	free(image->pixels);
 	free(image);

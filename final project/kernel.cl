@@ -46,10 +46,11 @@ __kernel void histogram(
 
 __kernel void cdf(
 	__global unsigned int* g_idata,
-	__global unsigned int* g_odata,
-	int n
+	__global unsigned int* g_odata
 )
 {
+	int n = 256;
+
 	__local float temp[256];
 
 	int thid = get_local_id(0);
